@@ -1,5 +1,6 @@
-from pytube import YouTube
+from pytube import extract
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_dl import YouTubeDL
 import os
 
 def main():
@@ -11,8 +12,7 @@ def main():
         transcript2(url)
 
 def transcript1(url):
-    yt = YouTube(url)
-    v_id = YouTube.video_id(url)
+    v_id = extract.video_id(url)
 
     transcript_list = YouTubeTranscriptApi.list_transcripts(v_id)
     transcript = transcript_list.find_generated_transcript(['en'])
@@ -32,6 +32,19 @@ def transcript1(url):
     # the source code: https://pytube.io/en/latest/
 
 def transcript2(url):
+    audio_downloader = YouTubeDL({'format':'bestaudio'})
+    
+    while (True):
+        try:
+            print('YouTube Downloader'.center(40, '_'))
+            audio_downloader.extract_info(url)
+        expect Exception:
+            print('could not download the audio')
+        finally:
+            option = int(input('\n1.download again \n2.Exit\n\nOption here :'))
+            if (option != 1):
+                break
+    """
     yt = YouTube(url)
     video = yt.streams.filter(only_audio=True).first()
     out_file = video.download()
@@ -40,9 +53,11 @@ def transcript2(url):
     os.rename(out_file, new_file)
 
     print(yt.title + " has been successfully downloaded.")
+    """
 
     # reference for transcript2
     # https://www.geeksforgeeks.org/download-video-in-mp3-format-using-pytube/
+    # https://dev.to/kalebu/how-to-download-youtube-video-as-audio-using-python-33g9
 
 if __name__ == "__main__":
     main()
